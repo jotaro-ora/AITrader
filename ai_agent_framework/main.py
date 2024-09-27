@@ -16,11 +16,13 @@ load_dotenv()
 
 class AIAgentFramework:
     def __init__(self):
-        
         current_dir = os.path.dirname(os.path.abspath(__file__))
         jojo_product_path = os.path.join(current_dir, 'knowledge', 'JOJOProduct_knowledge.json')
-        self.product_db = ProductKnowledgeDB(jojo_product_path)
-        self.product_db.load_data()
+        cache_dir = os.path.join(current_dir, 'embedding_cache')
+        index_file = os.path.join(current_dir, 'faiss_index.bin')
+        data_file = os.path.join(current_dir, 'data.json')
+        
+        self.product_db = ProductKnowledgeDB(jojo_product_path, cache_dir, index_file, data_file)
         self.news_db = NewsHistoryDB()
         self.trading_db = TradingHistoryDB()
 
@@ -37,9 +39,9 @@ class AIAgentFramework:
     def process_query(self, query):
         problem_type = self.problem_analysis.analyze(query)
         
-        if "product usage" in problem_type:
+        if "product usage" in problem_type.lower():
             response = self.product_usage.answer(query)
-        elif "price prediction" in problem_type:
+        elif "price prediction" in problem_type.lower():
             news_info = self.news_history.analyze()
             real_time_data = self.real_time_analysis.analyze()
             expert_report = self.report_aggregation.aggregate()
