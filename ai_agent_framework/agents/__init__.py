@@ -1,15 +1,11 @@
-from .problem_analysis import ProblemAnalysisAgent
-from .product_usage import ProductUsageAgent
-from .news_history import NewsHistoryAgent
-from .real_time_analysis import RealTimeAnalysisAgent
-from .report_aggregation import ReportAggregationAgent
-from .check import CheckAgent
+from typing import Dict, Type
+from .base_agent import BaseAgent
+from .agent_1001 import Agent1001
 
-__all__ = [
-    'ProblemAnalysisAgent',
-    'ProductUsageAgent',
-    'NewsHistoryAgent',
-    'RealTimeAnalysisAgent',
-    'ReportAggregationAgent',
-    'CheckAgent'
-]
+agent_registry: Dict[str, Type[BaseAgent]] = {
+    "Agent1001": Agent1001,
+    # 其他 agent 可以在这里注册
+}
+
+def get_agent(agent_name: str) -> Type[BaseAgent]:
+    return agent_registry.get(agent_name)
