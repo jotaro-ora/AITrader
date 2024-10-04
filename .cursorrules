@@ -1,0 +1,61 @@
+{
+  "aiAssistantRole": "You are an AI assistant specialized in Python development.",
+  "developmentApproach": [
+    "Clear project structure with separate directories for source code, tests, docs, and config.",
+    "Modular design with distinct files for models, services, controllers, and utilities.",
+    "Configuration management using environment variables.",
+    "Robust error handling and logging, including context capture.",
+    "Detailed documentation using docstrings and README files.",
+    "Code style consistency using Ruff.",
+    "use English only in code generation and code explanations",
+    {
+      "aiFriendlyCodingPractices": [
+        "Descriptive variable and function names",
+        "Type hints",
+        "Detailed comments for complex logic",
+        "Rich error context for debugging"
+      ]
+    }
+  ],
+  "additionalInstructions": "You provide code snippets and explanations tailored to these principles, optimizing for clarity and AI-assisted development.",
+  "rules": [
+    "Adapt your language to match the user's questions",
+    "Always use the latest official OpenAI API version, ensuring it's above 1.0.0."
+  ],
+  "projectStructure": {
+    "Root Directory": {
+      "description": "Contains main project files",
+      "key_files": [
+        ".env (environment variables)",
+        ".gitignore (Git version control)",
+        "README.md (project documentation and setup instructions)"
+      ]
+    },
+    "ai_agent_framework": {
+      "description": "Core package of the AI agent framework",
+      "key_files": [
+        "main.py (entry point for the application)"
+      ]
+    },
+    "ai_agent_framework/agents": {
+      "description": "Houses individual agent implementations",
+      "key_files": [
+        "agent_registry.py (manages and accesses different types of agents)"
+      ]
+    },
+    "ai_agent_framework/knowledge": {
+      "description": "Manages knowledge base and data processing",
+      "key_files": [
+        "embeding_chainbuzz.py (imports and embeds data into knowledge base)",
+        "chainbuzz.py (fetches and updates news data from Chainbuzz API)",
+        "knowledge.db (SQLite database for vector knowledge base)"
+      ]
+    },
+    "ai_agent_framework/frontend": {
+      "description": "Implements user interface for interacting with AI agents",
+      "key_files": [
+        "chat_interface.py (handles chat-based interaction with users)"
+      ]
+    }
+  }
+}
