@@ -1,10 +1,10 @@
 import gradio as gr
 from ai_agent_framework.knowledge.knowledge_base import VectorDB
 from ai_agent_framework.agents.agent_1001 import Agent1001
-# Import other agent classes
+from typing import Generator, List, Tuple
 
 class ChatInterface:
-    def __init__(self, db_path, openai_api_key):
+    def __init__(self, db_path: str, openai_api_key: str):
         self.db_path = db_path
         self.openai_api_key = openai_api_key
         self.agents = {
@@ -12,16 +12,28 @@ class ChatInterface:
             # Add other agents
         }
 
-    def chat(self, message, agent_name, history):
+    def chat(self, message: str, agent_name: str, history: List[Tuple[str, str]]) -> Generator[List[Tuple[str, str]], None, None]:
+        """
+        Process user message and generate a streaming response.
+
+        :param message: User's input message
+        :param agent_name: Name of the selected agent
+        :param history: Chat history
+        :yield: Updated chat history with streaming response
+        """
         db = VectorDB(self.db_path)
         agent_class = self.agents.get(agent_name)
         if not agent_class:
-            return "Invalid agent selected. Please choose a valid agent.", history
+            yield history + [(message, "Invalid agent selected. Please choose a valid agent.")]
+            return
 
         agent = agent_class(db, self.openai_api_key)
-        response = agent.answer_question(message)
+        response_generator = agent.answer_question(message)
         
-        return response
+        partial_response = ""
+        for chunk in response_generator:
+            partial_response += chunk
+            yield history + [(message, partial_response)]
 
     def launch(self):
         with gr.Blocks() as demo:
@@ -39,14 +51,13 @@ class ChatInterface:
             msg = gr.Textbox()
             clear = gr.Button("Clear")
 
-            def user(user_message, history):
+            def user(user_message: str, history: List[Tuple[str, str]]) -> Tuple[str, List[Tuple[str, str]]]:
                 return "", history + [(user_message, None)]
 
-            def bot(history, agent_name):
+            def bot(history: List[Tuple[str, str]], agent_name: str) -> Generator[List[Tuple[str, str]], None, None]:
                 user_message = history[-1][0]
-                bot_message = self.chat(user_message, agent_name, history[:-1])
-                new_history = history[:-1] + [(user_message, bot_message)]
-                return new_history
+                for updated_history in self.chat(user_message, agent_name, history[:-1]):
+                    yield updated_history
 
             msg.submit(user, [msg, chatbot], [msg, chatbot], queue=False).then(
                 bot, [chatbot, agent_dropdown], chatbot

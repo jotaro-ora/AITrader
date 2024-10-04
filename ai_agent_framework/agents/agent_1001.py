@@ -1,5 +1,5 @@
 import openai
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Generator
 from datetime import datetime, timedelta
 from ai_agent_framework.agents.base_agent import BaseAgent
 from ai_agent_framework.knowledge.knowledge_base import VectorDB
@@ -10,13 +10,13 @@ class Agent1001(BaseAgent):
         super().__init__(knowledge_base)
         self.client = OpenAI(api_key=openai_api_key)
 
-    def answer_question(self, question: str, tags: Optional[List[str]] = ["chainbuzz"]) -> str:
+    def answer_question(self, question: str, tags: Optional[List[str]] = ["chainbuzz"]) -> Generator[str, None, None]:
         """
-        Answer the user's question using GPT-4 and the knowledge base.
+        Answer the user's question using GPT-4 and the knowledge base with streaming output.
         
         :param question: The user's question
         :param tags: Optional list of tags to filter results, defaults to ["chainbuzz"]
-        :return: The answer
+        :yield: Chunks of the answer as they are generated
         """
         # Set time range to last month
         end_time = datetime.now()
@@ -26,7 +26,7 @@ class Agent1001(BaseAgent):
         query_vector = self.get_embedding(question)[0]
         print(f"Query vector shape: {len(query_vector)}")
         
-        # 使用更新后的 search ���法
+        # 使用更新后的 search 法
         search_results = self.knowledge_base.search(
             query_vector, 
             limit=5, 
@@ -47,20 +47,24 @@ class Agent1001(BaseAgent):
         
         context = self._build_context(question, search_results)
         
-        # Use OpenAI API to generate an answer with GPT-4
+        # Use OpenAI API to generate an answer with GPT-4 in streaming mode
         response = self.client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are an AI assistant with expertise in blockchain and cryptocurrency news, especially from ChainBuzz. Please answer the question based on the provided context, focusing on information from the last month."},
                 {"role": "user", "content": context}
-            ]
+            ],
+            stream=True  # Enable streaming
         )
         
-        answer = response.choices[0].message.content
+        full_answer = ""
+        for chunk in response:
+            if chunk.choices[0].delta.content is not None:
+                content = chunk.choices[0].delta.content
+                full_answer += content
+                yield content
         
-        self._update_short_term_memory(question, answer)
-        
-        return answer
+        self._update_short_term_memory(question, full_answer)
 
     def _build_context(self, question: str, search_results: List[dict]) -> str:
         """
