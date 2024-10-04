@@ -1,7 +1,7 @@
 import gradio as gr
 from ai_agent_framework.knowledge.knowledge_base import VectorDB
 from ai_agent_framework.agents.agent_1001 import Agent1001
-# 导入其他 agent 类
+# Import other agent classes
 
 class ChatInterface:
     def __init__(self, db_path, openai_api_key):
@@ -9,7 +9,7 @@ class ChatInterface:
         self.openai_api_key = openai_api_key
         self.agents = {
             "Agent1001": Agent1001,
-            # 添加其他 agent
+            # Add other agents
         }
 
     def chat(self, message, agent_name, history):
@@ -56,7 +56,7 @@ class ChatInterface:
         demo.launch()
 
 if __name__ == "__main__":
-    # 这里仅用于测试目的，实际使用时应从 main.py 调用
+    # This is for testing purposes only, should be called from main.py in actual use
     import os
     from dotenv import load_dotenv
     
