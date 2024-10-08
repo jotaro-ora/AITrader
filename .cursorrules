@@ -24,7 +24,7 @@
   ],
   "projectStructure": {
     "Root Directory": {
-      "description": "Contains main project files",
+      "description": "Contains main project files and directories",
       "key_files": [
         ".env (environment variables)",
         ".gitignore (Git version control)",
@@ -47,7 +47,7 @@
       "description": "Manages knowledge base and data processing",
       "key_files": [
         "embeding_chainbuzz.py (imports and embeds data into knowledge base)",
-        "chainbuzz.py (fetches and updates news data from Chainbuzz API)",
+        "knowledge_base.py (implements VectorDB class for managing the knowledge base)",
         "knowledge.db (SQLite database for vector knowledge base)"
       ]
     },
@@ -55,6 +55,13 @@
       "description": "Implements user interface for interacting with AI agents",
       "key_files": [
         "chat_interface.py (handles chat-based interaction with users)"
+      ]
+    },
+    "data_source": {
+      "description": "Contains data files and scripts for data collection",
+      "key_files": [
+        "chainbuzz_news_en.json (English news data from Chainbuzz)",
+        "chainbuzz.py (fetches and updates news data from Chainbuzz API)"
       ]
     }
   }

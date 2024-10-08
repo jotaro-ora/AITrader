@@ -120,4 +120,5 @@ class VectorDB:
             return [row[0] for row in cursor.fetchall()]
 
     def close(self):
-        self.conn.close()
+        # This method is kept for interface consistency, but it doesn't need to do anything
+        pass

@@ -1,3 +1,4 @@
+import os
 import json
 import feedparser
 from bs4 import BeautifulSoup
@@ -7,10 +8,19 @@ from bs4 import BeautifulSoup
 # Class for handling predefined tags and tag extraction logic
 class TagExtractor:
     def __init__(self):
-        # Load tags from the JSON file
-        with open('tags.json', 'r') as f:
-            data = json.load(f)
-            self.predefined_tags = data['tags']
+        # 获取当前脚本文件的绝对路径
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        # 构建 tags.json 的完整路径
+        tags_file_path = os.path.join(script_dir, 'tags.json')
+        
+        try:
+            # 使用完整路径打开 tags.json 文件
+            with open(tags_file_path, 'r') as f:
+                data = json.load(f)
+                self.predefined_tags = data['tags']
+        except FileNotFoundError:
+            print(f"Error: 'tags.json' file not found. Please ensure it exists at {tags_file_path}")
+            self.predefined_tags = []  # Use empty list as default
 
     # Function to extract tags based on content keywords
     def extract_tags(self, content):
@@ -170,10 +180,14 @@ def fetch_data_cryptopolitan(max_articles):
 
 # Function to update the database (knowledge base) with a goal of 1,000 articles
 def update_database(target_article_count=1000):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    kb_file_path = os.path.join(script_dir, 'knowledge_base.json')
+    
     try:
-        with open('knowledge_base.json', 'r') as f:
+        with open(kb_file_path, 'r') as f:
             knowledge_base = json.load(f)
     except FileNotFoundError:
+        print(f"Warning: 'knowledge_base.json' file not found. Creating a new one.")
         knowledge_base = []
 
     current_article_count = len(knowledge_base)
@@ -215,7 +229,7 @@ def update_database(target_article_count=1000):
             remaining_articles = target_article_count - len(knowledge_base)
 
     # Save updated knowledge base back to the database (JSON file)
-    with open('knowledge_base.json', 'w') as f:
+    with open(kb_file_path, 'w') as f:
         json.dump(knowledge_base, f, indent=4)
 
     print(f"Database updated successfully with {len(knowledge_base)} articles.")
