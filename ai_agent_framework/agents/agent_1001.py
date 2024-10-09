@@ -37,17 +37,12 @@ class Agent1001(BaseAgent):
         # Detect the language of the question
         source_lang = detect(question)
         language_name = get_language_name(source_lang)
-
-        end_time = datetime.now()
-        start_time = end_time - timedelta(days=30)
         
         query_vector = self.get_embedding(question)[0]
         
         search_results = self.knowledge_base.search(
             query_vector, 
-            limit=5, 
-            time_range=(start_time, end_time), 
-            tags=tags
+            limit=5
         )
         
         context = self._build_context(question, search_results, language_name)
@@ -86,7 +81,7 @@ class Agent1001(BaseAgent):
         :param language_name: The name of the language to respond in
         :return: The constructed context string
         """
-        context = f"Question: {question}\n\nRelevant information from ChainBuzz in the last month:\n"
+        context = f"Question: {question}\n\nRelevant information\n"
         for result in search_results:
             content = result['content']
             timestamp = result['timestamp']
@@ -99,7 +94,7 @@ class Agent1001(BaseAgent):
             for past_question, past_answer in self.conversation_history:
                 context += f"Q: {past_question}\nA: {past_answer}\n\n"
         
-        context += f"Based on the above information from ChainBuzz in the last month and the conversation history, please provide a concise and accurate answer to the question. If the question is similar to a previous one, refer to the previous answer and provide any updates or corrections if necessary. IMPORTANT: Your response must be in {language_name}."
+        context += f"Based on the above information and the conversation history, please provide a concise and accurate answer to the question. If the question is similar to a previous one, refer to the previous answer and provide any updates or corrections if necessary. IMPORTANT: Your response must be in {language_name}."
         return context
 
     def _update_conversation_history(self, question: str, answer: str) -> None:

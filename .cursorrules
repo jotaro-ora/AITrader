@@ -40,7 +40,8 @@
     "ai_agent_framework/agents": {
       "description": "Houses individual agent implementations",
       "key_files": [
-        "agent_registry.py (manages and accesses different types of agents)"
+        "agent_registry.py (manages and accesses different types of agents)",
+        "benchmark.py (benchmark for agents, results are saved in benchmark_result)"
       ]
     },
     "ai_agent_framework/knowledge": {
@@ -60,8 +61,7 @@
     "data_source": {
       "description": "Contains data files and scripts for data collection",
       "key_files": [
-        "chainbuzz_news_en.json (English news data from Chainbuzz)",
-        "chainbuzz.py (fetches and updates news data from Chainbuzz API)"
+        "main.py (entry point for the application)"
       ]
     }
   }
